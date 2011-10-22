@@ -1,0 +1,71 @@
+=head1 Catalyst::Plugin::AUTOCRUD Tutorial.
+
+Some worked examples for those that need a bit more explanation than the module
+documentation gives.
+
+=head2 Running the demos.
+
+Do make sure that you have a sufficiently recent version of catalyst installed.
+If you find that you run C< perl server.pl > from the C< examples/demo >
+directory, and it seems to start up OK, but then exits, upgrade Catalyst to the
+latest available version (5.9 at the time of writing).
+
+=head2 Hiding tables.
+
+Once the demo is running, and you visit C<http://localhost:3000> you will see
+the list of tables available in the database schema.  Seeing as displaying the
+many to many join table of the database is fairly pointless, we should get
+AutoCRUD to hide it, as the information is actually displayed in the .  This is achieved by making the following changes to the C<demo.conf> file (given in diff format with zero lines of context):
+
+ $ git diff -U0 demo.conf
+ diff --git a/examples/demo/demo.conf b/examples/demo/demo.conf
+ index 86ef604..ee00ba2 100644
+ --- a/examples/demo/demo.conf
+ +++ b/examples/demo/demo.conf
+ @@ -29,2 +29,2 @@
+ -#    <sites>
+ -#        <default>
+ +    <sites>
+ +        <default>
+ @@ -35 +35,4 @@
+ -#            <dbic>
+ +            <dbic>
+ +                 <album_artist>
+ +                        hidden yes
+ +                 </album_artist>
+ @@ -46,3 +49,3 @@
+ -#            </dbic>
+ -#        </default>
+ -#    </sites>
+ +            </dbic>
+ +        </default>
+ +    </sites>
+
+There are two important things to note about the above configuration.
+
+Firstly: the table name sources are given as the name of the table in the
+database and B<not> the name of the DBIx::Class::Result classes.
+
+Secondly: The <dbic> key (beneath default) is the name of the Catalyst::Model
+that provides the database connection and DBIx::Class schema information.  So
+if your App was called MyApp, and you wanted to use the model MyApp::Db for the
+database connection, you would use C< db > as the configuration key instead of
+C< dbic >.
+
+TODO: Is there a way to configure AUTOCRUD so that is hides all tables except
+the ones set to
+
+=head2 display_name
+
+TODO - need to fix this for the demo app.
+
+=head2 Adding/editing related records.
+
+AutoCRUD doesn't support the editing of table relationships by default.  This
+is because being able to add and edit related records is a hard problem to
+implement in a sufficiently generic way while maintaining flexibility.
+
+So to get these features you'll need to write some code and edit some
+templates.  Here's how we can do this for the Albums table.
+
+
